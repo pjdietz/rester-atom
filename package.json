@@ -1,18 +1,14 @@
 {
-  "name": "rester-atom",
-  "main": "./lib/rester-atom",
-  "version": "0.0.0",
-  "description": "A short description of your package",
-  "keywords": [
-  ],
-  "activationCommands": {
-    "atom-workspace": "rester-atom:toggle"
-  },
-  "repository": "https://github.com/atom/rester-atom",
-  "license": "MIT",
-  "engines": {
-    "atom": ">=1.0.0 <2.0.0"
-  },
-  "dependencies": {
-  }
+    "name": "rester",
+    "main": "./lib/rester",
+    "version": "0.0.0",
+    "description": "A short description of your package",
+    "keywords": [],
+    "activationEvents": ["rester:request"],
+    "repository": "https://github.com/atom/rester-atom",
+    "license": "MIT",
+    "engines": {
+        "atom": ">=1.0.0 <2.0.0"
+    },
+    "dependencies": {}
 }
