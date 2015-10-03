@@ -1,0 +1,22 @@
+# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle rester-atom'
+      'command': 'rester-atom:toggle'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'rester-atom'
+      'submenu': [
+        {
+          'label': 'Toggle'
+          'command': 'rester-atom:toggle'
+        }
+      ]
+    ]
+  }
+]
