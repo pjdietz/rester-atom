@@ -10,5 +10,7 @@
     "engines": {
         "atom": ">=1.0.0 <2.0.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "rester-client": "git@github.com:pjdietz/rester-client.git#master"
+    }
 }
