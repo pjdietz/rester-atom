@@ -1,0 +1,122 @@
+{
+    "scopeName": "rester",
+    "name": "HTTP Message",
+    "fileTypes": [
+        "http",
+        "rester"
+    ],
+    "patterns": [
+        {
+            "include": "#requestLine"
+        },
+        {
+            "include": "#statusLine"
+        },
+        {
+            "include": "#header"
+        },
+        {
+            "include": "#query"
+        },
+        {
+            "include": "#option"
+        },
+        {
+            "include": "#flag"
+        },
+        {
+            "include": "#comments"
+        }
+    ],
+    "repository": {
+        "requestLine": {
+            "match": "^([A-Z]+)\\s+(\\S+)(.*)$",
+            "captures": {
+                "1": {
+                    "name": "entity.name.function"
+                },
+                "2": {
+                    "name": "constant.langauge.rester"
+                },
+                "3": {
+                    "patterns": [
+                        {
+                            "include": "#protocol"
+                        }
+                    ]
+                }
+            }
+        },
+        "statusLine": {
+            "match": "^(.*) ([1-5][0-9][0-9]) (.*)$",
+            "captures": {
+                "1": {
+                    "patterns": [
+                        {
+                            "include": "#protocol"
+                        }
+                    ]
+                },
+                "2": {
+                    "name": "support.constant.rester"
+                },
+                "3": {
+                    "name": "string.header.rester"
+                }
+            }
+        },
+        "header": {
+            "match": "^([a-zA-Z\\-]+)(:)\\s*(.*)$",
+            "captures": {
+                "1": {
+                    "name": "support.function.header.rester"
+                },
+                "2": {
+                    "name": "keyword.operator.rester"
+                },
+                "3": {
+                    "name": "string.header.rester"
+                }
+            }
+        },
+        "query": {
+            "name": "constant.language.query",
+            "match": "^\\s*(\\?|&)\\s*([a-zA-Z0-9%]+)\\s*(:|=)\\s*(.*)$",
+            "captures": {
+                "1": {
+                    "name": "keyword.operator.query.rester"
+                },
+                "3": {
+                    "name": "keyword.operator.query.rester"
+                }
+            }
+        },
+        "option": {
+            "name": "entity.name.type.option.rester",
+            "match": "^\\s*(@[a-zA-Z0-9%]+)\\s*(:|=)\\s*(.*)$",
+            "captures": {
+                "2": {
+                    "name": "keyword.operator.query.rester"
+                }
+            }
+        },
+        "flag": {
+            "name": "entity.name.type.option.rester",
+            "match": "^\\s*(@[a-zA-Z0-9%]+)\\s*$"
+        },
+        "protocol": {
+            "match": "(HTTP/.*)",
+            "name": "storage.type.protocol.rester"
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "comment": "# line comment",
+                    "begin": "#",
+                    "end": "\\n",
+                    "name": "comment.line.number-sign.rester"
+                }
+            ]
+        }
+    }
+}
