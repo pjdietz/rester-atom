@@ -1,5 +1,5 @@
 {
-    "scopeName": "rester",
+    "scopeName": "source.rester",
     "name": "HTTP Message",
     "fileTypes": [
         "http",
