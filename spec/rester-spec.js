@@ -127,4 +127,50 @@ describe("RESTer", function () {
             });
         });
     });
+
+    describe("Response", function () {
+
+        var responseSent,
+            server;
+
+        beforeEach(function () {
+            responseSent = false;
+            server = http.createServer();
+            server.on("request", function(request, response) {
+                response.statusCode = 200;
+                response.write("Hello, world!");
+                response.end();
+                responseSent = true;
+            });
+            server.listen(port);
+        });
+        afterEach(function () {
+            server.close();
+        });
+
+        it("Writes response to new editor", function () {
+            // Open an editor and set the text.
+            waitsForPromise(function () {
+                var promise = atom.workspace.open();
+                promise.then(function (editor) {
+                    editor.setText(requestTest);
+                });
+                return promise;
+            });
+            // Run the command.
+            runs(function () {
+                expect(workspaceElement.querySelector(".rester-request-progress")).not.toExist();
+                atom.commands.dispatch(workspaceElement, "rester:request");
+            });
+            // Wait until the server finished sending the response.
+            waitsFor(function () {
+                return responseSent;
+            });
+            // There should be an additional pane with the response.
+            runs(function () {
+                expect(atom.workspace.getPanes().length).toEqual(2);
+            });
+        });
+
+    });
 });
