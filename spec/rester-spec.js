@@ -148,6 +148,64 @@ describe("RESTer", function () {
             server.close();
         });
 
+        it("hides modal progress view after response", function () {
+            var panel;
+            // Open an editor and set the text.
+            waitsForPromise(function () {
+                var promise = atom.workspace.open();
+                promise.then(function (editor) {
+                    editor.setText(requestTest);
+                });
+                return promise;
+            });
+            // Run the command.
+            runs(function () {
+                expect(workspaceElement.querySelector(".rester-request-progress")).not.toExist();
+                atom.commands.dispatch(workspaceElement, "rester:request");
+            });
+            // Wait until the server finished sending the response.
+            waitsFor(function () {
+                return responseSent;
+            });
+            waitsFor(function () {
+                var item = workspaceElement.querySelector(".rester-request-progress");
+                panel = atom.workspace.panelForItem(item);
+                return panel !== undefined;
+            });
+            runs(function () {
+                expect(panel.isVisible()).toBe(false);
+            });
+        });
+
+        it("Reactivates request editor after response", function () {
+            var requestEditor, requestPane;
+            // Open an editor and set the text.
+            waitsForPromise(function () {
+                var promise = atom.workspace.open();
+                promise.then(function (editor) {
+                    editor.setText(requestTest);
+                    requestEditor = editor;
+                    requestPane = atom.workspace.paneForItem(requestEditor);
+                });
+                return promise;
+            });
+            // Run the command.
+            runs(function () {
+                atom.commands.dispatch(workspaceElement, "rester:request");
+            });
+            // Wait until the server finished sending the response.
+            waitsFor(function () {
+                return responseSent;
+            });
+            // There should be an additional pane with the response.
+            runs(function () {
+                var currentPane = atom.workspace.getActivePane(),
+                    currentEditor = atom.workspace.getActiveTextEditor();
+                expect(currentPane).toBe(requestPane);
+                expect(currentEditor).toBe(requestEditor);
+            });
+        });
+        
         it("Writes response to new editor", function () {
             // Open an editor and set the text.
             waitsForPromise(function () {
@@ -172,5 +230,41 @@ describe("RESTer", function () {
             });
         });
 
+        it("Writes response to previously used editor", function () {
+            var requestEditor;
+            // Open an editor and set the text.
+            waitsForPromise(function () {
+                var promise = atom.workspace.open();
+                promise.then(function (editor) {
+                    editor.setText(requestTest);
+                    requestEditor = editor;
+                });
+                return promise;
+            });
+            // Run the command.
+            runs(function () {
+                atom.commands.dispatch(workspaceElement, "rester:request");
+            });
+            // Wait until the server finished sending the response.
+            waitsFor(function () {
+                return responseSent;
+            });
+            // There should be an additional pane with the response.
+            runs(function () {
+                expect(atom.workspace.getTextEditors().length).toEqual(2);
+                responseSent = false;
+                atom.commands.dispatch(workspaceElement, "rester:request");
+            });
+            // Wait until the server finished sending the response.
+            waitsFor(function () {
+                return responseSent;
+            });
+            // There should be an additional pane with the response.
+            runs(function () {
+                expect(atom.workspace.getTextEditors().length).toEqual(2);
+                responseSent = false;
+                atom.commands.dispatch(workspaceElement, "rester:request");
+            });
+        });
     });
 });
