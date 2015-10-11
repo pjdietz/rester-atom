@@ -1,10 +1,6 @@
 var RequestProcess = require("../lib/requestProcess").RequestProcess;
 
 describe("RequestProcess", function () {
-    it("Does stuff", function () {
-        var proc = new RequestProcess();
-        expect(proc).toBeDefined();
-    });
 
     describe("Selection", function () {
 
@@ -18,8 +14,13 @@ describe("RequestProcess", function () {
             text = lines.join("\n");
 
         beforeEach(function() {
+            var editor;
             waitsForPromise(function() {
-                return atom.workspace.open("request.http");
+                var promise = atom.workspace.open();
+                promise.then(function (editor) {
+                    editor.setText(text);
+                });
+                return promise;
             });
         });
 

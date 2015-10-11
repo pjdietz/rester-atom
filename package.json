@@ -4,7 +4,11 @@
     "version": "0.0.0",
     "description": "A short description of your package",
     "keywords": [],
-    "activationEvents": ["rester:request"],
+    "activationCommands": {
+        "atom-workspace": [
+            "rester:request"
+        ]
+    },
     "repository": "https://github.com/atom/rester-atom",
     "license": "MIT",
     "engines": {
