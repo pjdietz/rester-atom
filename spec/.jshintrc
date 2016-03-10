@@ -1,0 +1,6 @@
+{
+    "esnext": true,
+    "jasmine": true,
+    "predef": ["atom", "waitsForPromise"],
+    "node": true
+}
