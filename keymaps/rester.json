@@ -1,5 +1,5 @@
 {
-    ".editor": {
+    "atom-text-editor": {
         "cmd-alt-r": "rester:request"
     }
 }
