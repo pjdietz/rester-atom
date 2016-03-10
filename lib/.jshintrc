@@ -1,5 +1,5 @@
 {
     "esnext": true,
-    "predef": ["document"],
+    "predef": ["atom", "document"],
     "node": true
 }
