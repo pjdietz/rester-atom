@@ -14,13 +14,14 @@ describe('RESTer', function () {
 
     let activationPromise;
     let workspaceElement;
+    let server;
 
     beforeEach(function() {
         activationPromise = atom.packages.activatePackage('rester');
         workspaceElement = atom.views.getView(atom.workspace);
     });
 
-    it('Displays modal view when starting request', function () {
+    it('Displays modal view when starting request', function (done) {
         let server;
         // Start a local server that starts but never finishes a response.
         // This gives the client time to test for the modal panel.
@@ -63,7 +64,7 @@ describe('RESTer', function () {
         // The modal panel should be visible.
         runs(() => {
             expect(panel.isVisible()).toBe(true);
-            server.close();
+            server.close(done);
         });
     });
 
@@ -136,6 +137,7 @@ describe('RESTer', function () {
             responseSent = false;
             server = http.createServer();
             server.on('request', (request, response) => {
+                console.log('SERVER RECEIEVED REQUEST');
                 response.statusCode = 200;
                 response.write('Hello, world!');
                 response.end();
@@ -143,8 +145,8 @@ describe('RESTer', function () {
             });
             server.listen(port);
         });
-        afterEach(() => {
-            server.close();
+        afterEach((done) => {
+            server.close(done);
         });
 
         it('Hides modal progress view after response', () => {
@@ -260,15 +262,13 @@ describe('RESTer', function () {
             // There should be an additional pane with the response.
             runs(() => {
                 expect(atom.workspace.getTextEditors().length).toEqual(2);
-                responseSent = false;
-                atom.commands.dispatch(workspaceElement, 'rester:request');
             });
         });
 
-        describe("Cancel", function () {
+        xdescribe("Cancel", function () {
             it("Request can be canceled while waiting for response");
             it("Request can be canceled while receiving response");
         });
-        it("Sets response editor grammar");
+        xit("Sets response editor grammar");
     });
 });
