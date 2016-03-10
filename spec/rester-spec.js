@@ -205,7 +205,7 @@ describe("RESTer", function () {
                 expect(currentEditor).toBe(requestEditor);
             });
         });
-        
+
         it("Writes response to new editor", function () {
             // Open an editor and set the text.
             waitsForPromise(function () {
@@ -266,5 +266,13 @@ describe("RESTer", function () {
                 atom.commands.dispatch(workspaceElement, "rester:request");
             });
         });
+
+        describe("Cancel", function () {
+            it("Request can be canceled while waiting for response", function () {});
+            it("Request can be canceled while receiving response", function () {});
+        });
+
+        it("Sets response editor grammar");
+
     });
 });
