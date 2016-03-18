@@ -1,6 +1,6 @@
 'use strict';
 
-const RequestProcess = require('../lib/requestProcess').RequestProcess;
+const RequestProcess = require('../lib/requestProcess');
 
 describe('RequestProcess', function () {
 
