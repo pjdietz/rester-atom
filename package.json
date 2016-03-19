@@ -15,6 +15,6 @@
         "atom": ">=1.0.0 <2.0.0"
     },
     "dependencies": {
-        "rester-client": "git@github.com:pjdietz/rester-client.git#master"
+        "rester-client": "https://github.com/pjdietz/rester-client.git#master"
     }
 }
