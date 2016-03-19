@@ -129,6 +129,9 @@ describe('Requests', function () {
             this.waitsForCommand();
             this.waitsForModalPanel();
             this.waitsForResponse();
+            waitsFor(() => {
+                return atom.workspace.getTextEditors().length > 1;
+            });
         });
         it('Hides modal panel', function () {
             expect(this.modalPanel.isVisible()).toBe(false);
@@ -153,6 +156,9 @@ describe('Requests', function () {
             this.waitsForCommand();
             this.waitsForModalPanel();
             this.waitsForResponse();
+            waitsFor(() => {
+                return atom.workspace.getTextEditors().length > 1;
+            });
             runs(() => {
                 this.serverSentResponse = false;
                 atom.commands.dispatch(this.workspaceElement, 'rester:request');
