@@ -203,5 +203,51 @@ describe('Config', function () {
                 assertShowsFinalRespose();
             });
         });
+        describe('When redirect code is in the list of codes to follow', function () {
+            beforeEach(function () {
+                atom.config.set('rester.followRedirects', true);
+                atom.config.set('rester.redirectStatusCodes', ['302']);
+            });
+            describe('And there are no overrides', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3`);
+                    this.waitsForResponse();
+                });
+                assertShowsFinalRespose();
+            });
+            describe('And @redirectStatusCodes does not include the code', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3
+                        @redirectStatusCodes: [301]`);
+                    this.waitsForResponse();
+                });
+                assertShowsRedirectResponse();
+            });
+        });
+        describe('When redirect code is not in the list of codes to follow', function () {
+            beforeEach(function () {
+                atom.config.set('rester.followRedirects', true);
+                atom.config.set('rester.redirectStatusCodes', ['301']);
+            });
+            describe('And there are no overrides', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3`);
+                    this.waitsForResponse();
+                });
+                assertShowsRedirectResponse();
+            });
+            describe('And @redirectStatusCodes includes the code', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3
+                        @redirectStatusCodes: [302]`);
+                    this.waitsForResponse();
+                });
+                assertShowsFinalRespose();
+            });
+        });
     });
 });
