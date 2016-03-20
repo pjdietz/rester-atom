@@ -143,6 +143,13 @@ describe('Config', function () {
 
     describe('Redrects', function () {
 
+        function assertShowsFinalRespose() {
+            it('Displays final response', function () {
+                let response = this.getResponseEditor().getText();
+                expect(response).toContain('HTTP/1.1 200 OK');
+            });
+        }
+
         function assertShowsRedirectResponse() {
             it('Displays redirect response', function () {
                 let response = this.getResponseEditor().getText();
@@ -150,10 +157,10 @@ describe('Config', function () {
             });
         }
 
-        function assertShowsFinalRespose() {
-            it('Displays final response', function () {
+        function assertDoesNotShowRedirectResponse() {
+            it('Displays redirect response', function () {
                 let response = this.getResponseEditor().getText();
-                expect(response).toContain('HTTP/1.1 200 OK');
+                expect(response).not.toContain('HTTP/1.1 302 Found');
             });
         }
 
@@ -246,6 +253,68 @@ describe('Config', function () {
                         @redirectStatusCodes: [302]`);
                     this.waitsForResponse();
                 });
+                assertShowsFinalRespose();
+            });
+        });
+        describe('When redirecting and showRedirects is false', function () {
+            beforeEach(function () {
+                atom.config.set('rester.followRedirects', true);
+                atom.config.set('rester.redirectStatusCodes', ['302']);
+                atom.config.set('rester.showRedirects', false);
+            });
+            describe('And there are no overrides', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3`);
+                    this.waitsForResponse();
+                });
+                assertDoesNotShowRedirectResponse();
+                assertShowsFinalRespose();
+            });
+            describe('And request includes @showRedirects', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3
+                        @showRedirects`);
+                    this.waitsForResponse();
+                });
+                assertShowsRedirectResponse();
+                assertShowsFinalRespose();
+            });
+        });
+        describe('When redirecting and showRedirects is true', function () {
+            beforeEach(function () {
+                atom.config.set('rester.followRedirects', true);
+                atom.config.set('rester.redirectStatusCodes', ['302']);
+                atom.config.set('rester.showRedirects', true);
+            });
+            describe('And there are no overrides', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3`);
+                    this.waitsForResponse();
+                });
+                assertShowsRedirectResponse();
+                assertShowsFinalRespose();
+            });
+            describe('And request includes @showRedirects: false', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3
+                        @showRedirects: false`);
+                    this.waitsForResponse();
+                });
+                assertDoesNotShowRedirectResponse();
+                assertShowsFinalRespose();
+            });
+            describe('And request includes @hideRedirects', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/redirect/302/3
+                        @hideRedirects`);
+                    this.waitsForResponse();
+                });
+                assertDoesNotShowRedirectResponse();
                 assertShowsFinalRespose();
             });
         });
