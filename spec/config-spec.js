@@ -340,7 +340,7 @@ describe('Config', function () {
     });
 
     describe('Response Grammar', function () {
-        describe('When response grammer is set', function () {
+        describe('When response grammar is set', function () {
             beforeEach(function () {
                 atom.config.set('rester.responseGrammar', 'HTTP Message');
                 waitsForPromise(() => {
@@ -356,7 +356,7 @@ describe('Config', function () {
                     this.waitsForResponse();
                     this.waitsForRequestEditorActive();
                 });
-                it('Response grammer is set to setting', function () {
+                it('Sets response grammar to grammar from setting', function () {
                     let responseGrammar = this.responseEditor.getGrammar().name;
                     expect(responseGrammar).toEqual('HTTP Message');
                 });
@@ -369,9 +369,127 @@ describe('Config', function () {
                     this.waitsForResponse();
                     this.waitsForRequestEditorActive();
                 });
-                it('Response grammer is set to override', function () {
+                it('Sets response grammar to override', function () {
                     let responseGrammar = this.responseEditor.getGrammar().name;
                     expect(responseGrammar).toEqual('JSON');
+                });
+            });
+        });
+    });
+
+    describe('Response commands', function () {
+        describe('When response commands are set', function () {
+            let testCommand1Called;
+            let testCommand2Called;
+            let testCommand3Called;
+            beforeEach(function () {
+                testCommand1Called = false;
+                testCommand2Called = false;
+                testCommand3Called = false;
+                atom.config.set('rester.responseCommands', ['rester:test-command-1', 'rester:test-command-2']);
+                atom.commands.add(this.workspaceElement, 'rester:test-command-1', function () {
+                    testCommand1Called = true;
+                });
+                atom.commands.add(this.workspaceElement, 'rester:test-command-2', function () {
+                    testCommand2Called = true;
+                });
+                atom.commands.add(this.workspaceElement, 'rester:test-command-3', function () {
+                    testCommand3Called = true;
+                });
+            });
+            describe('And there are no overrides', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`GET http://localhost:${port}/`);
+                    this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
+                });
+                it('Runs each response command', function () {
+                    expect(testCommand1Called).toBe(true);
+                    expect(testCommand2Called).toBe(true);
+                });
+            });
+            describe('And request contains an override as a single string', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/
+                        @responseCommands: rester:test-command-3`);
+                    this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
+                });
+                it('Run each override command', function () {
+                    expect(testCommand3Called).toBe(true);
+                });
+                it('Does not run default commandss', function () {
+                    expect(testCommand1Called).not.toBe(true);
+                    expect(testCommand2Called).not.toBe(true);
+                });
+            });
+            describe('And request contains an override as a string list', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/
+                        @responseCommands: rester:test-command-2, rester:test-command-3`);
+                    this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
+                });
+                it('Run each override command', function () {
+                    expect(testCommand2Called).toBe(true);
+                    expect(testCommand3Called).toBe(true);
+                });
+                it('Does not run default commandss', function () {
+                    expect(testCommand1Called).not.toBe(true);
+                });
+            });
+            describe('And request contains an override as an array', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/
+                        @responseCommands: ["rester:test-command-2", "rester:test-command-3"]`);
+                    this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
+                });
+                it('Run each override command', function () {
+                    expect(testCommand2Called).toBe(true);
+                    expect(testCommand3Called).toBe(true);
+                });
+                it('Does not run default commandss', function () {
+                    expect(testCommand1Called).not.toBe(true);
+                });
+            });
+        });
+        describe('When response commands runs', function () {
+            let testCommandCalled;
+            beforeEach(function () {
+                testCommandCalled = false;
+                atom.config.set('rester.responseCommands', ['rester:test-command']);
+                atom.commands.add(this.workspaceElement, 'rester:test-command', function () {
+                    testCommandCalled = true;
+                });
+            });
+            describe('And response contains headers', function () {
+                beforeEach(function () {
+                    atom.config.set('rester.showHeaders', true);
+                    this.dispatchCommand(`GET http://localhost:${port}/`);
+                    this.waitsForResponse();
+                    waitsFor(() => {
+                        return testCommandCalled;
+                    });
+                });
+                it('Selection include body', function () {
+                    expect(this.responseEditor.getSelectedText()).toEqual('Hello, world!');
+                });
+            });
+            describe('And response contains body only', function () {
+                beforeEach(function () {
+                    atom.config.set('rester.showHeaders', false);
+                    this.dispatchCommand(`GET http://localhost:${port}/`);
+                    this.waitsForResponse();
+                    waitsFor(() => {
+                        return testCommandCalled;
+                    });
+                });
+                it('Selection include body', function () {
+                    expect(this.responseEditor.getSelectedText()).toEqual('Hello, world!');
                 });
             });
         });
