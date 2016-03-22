@@ -53,14 +53,6 @@ describe('Config', function () {
                 });
             });
         };
-
-        this.getResponseEditor = function () {
-            let editors = atom.workspace.getTextEditors();
-            expect(editors.length).toEqual(2);
-            // Locate the editor that is not the request editor.
-            return (editors[0] === this.requestEditor) ? editors[1] : editors[0];
-        };
-
         // Block until the command is activated.
         this.waitsForCommand = function () {
             waitsForPromise(() => { return this.activationPromise; });
@@ -68,7 +60,19 @@ describe('Config', function () {
         // Block until the server sends a response.
         this.waitsForResponse = function () {
             waitsFor(() => {
-                return atom.workspace.getTextEditors().length > 1;
+                let editors = atom.workspace.getTextEditors();
+                if (editors.length > 1) {
+                    this.responseEditor = (editors[0] === this.requestEditor) ?
+                        editors[1] : editors[0];
+                    return true;
+                }
+                return false;
+            });
+        };
+        // Block until the request editor is reactivted.
+        this.waitsForRequestEditorActive = function () {
+            waitsFor(() => {
+                return this.requestPane.isActive();
             });
         };
     });
@@ -81,13 +85,13 @@ describe('Config', function () {
     describe('Response Headers', function () {
         function assertShowsHeaders() {
             it('Includes headers in response', function () {
-                let response = this.getResponseEditor().getText();
+                let response = this.responseEditor.getText();
                 expect(response).toContain('HTTP/1.1 200 OK');
             });
         }
         function assertHidesHeaders() {
             it('Does not include headers in response', function () {
-                let response = this.getResponseEditor().getText();
+                let response = this.responseEditor.getText();
                 expect(response).not.toContain('HTTP/1.1 200 OK');
             });
         }
@@ -99,6 +103,7 @@ describe('Config', function () {
                 beforeEach(function () {
                     this.dispatchCommand(`GET http://localhost:${port}/`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsHeaders();
             });
@@ -107,6 +112,7 @@ describe('Config', function () {
                     this.dispatchCommand(`GET http://localhost:${port}/
                         @showHeaders: false`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertHidesHeaders();
             });
@@ -115,6 +121,7 @@ describe('Config', function () {
                     this.dispatchCommand(`GET http://localhost:${port}/
                         @hideHeaders`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertHidesHeaders();
             });
@@ -127,6 +134,7 @@ describe('Config', function () {
                 beforeEach(function () {
                     this.dispatchCommand(`GET http://localhost:${port}/`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertHidesHeaders();
             });
@@ -135,6 +143,7 @@ describe('Config', function () {
                     this.dispatchCommand(`GET http://localhost:${port}/
                         @showHeaders`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsHeaders();
             });
@@ -145,21 +154,21 @@ describe('Config', function () {
 
         function assertShowsFinalRespose() {
             it('Displays final response', function () {
-                let response = this.getResponseEditor().getText();
+                let response = this.responseEditor.getText();
                 expect(response).toContain('HTTP/1.1 200 OK');
             });
         }
 
         function assertShowsRedirectResponse() {
             it('Displays redirect response', function () {
-                let response = this.getResponseEditor().getText();
+                let response = this.responseEditor.getText();
                 expect(response).toContain('HTTP/1.1 302 Found');
             });
         }
 
         function assertDoesNotShowRedirectResponse() {
             it('Displays redirect response', function () {
-                let response = this.getResponseEditor().getText();
+                let response = this.responseEditor.getText();
                 expect(response).not.toContain('HTTP/1.1 302 Found');
             });
         }
@@ -174,6 +183,7 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -183,6 +193,7 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @followRedirects: false`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -197,6 +208,7 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -206,6 +218,7 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @followRedirects`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -220,6 +233,7 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -229,6 +243,7 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @redirectStatusCodes: [301]`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -243,6 +258,7 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -252,6 +268,7 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @redirectStatusCodes: [302]`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -267,6 +284,7 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertDoesNotShowRedirectResponse();
                 assertShowsFinalRespose();
@@ -277,6 +295,7 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @showRedirects`);
                     this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
                 assertShowsFinalRespose();
@@ -316,6 +335,44 @@ describe('Config', function () {
                 });
                 assertDoesNotShowRedirectResponse();
                 assertShowsFinalRespose();
+            });
+        });
+    });
+
+    describe('Response Grammar', function () {
+        describe('When response grammer is set', function () {
+            beforeEach(function () {
+                atom.config.set('rester.responseGrammar', 'HTTP Message');
+                waitsForPromise(() => {
+                    return atom.packages.activatePackage('language-text');
+                });
+                waitsForPromise(() => {
+                    return atom.packages.activatePackage('language-json');
+                });
+            });
+            describe('And there are no overrides', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`GET http://localhost:${port}/`);
+                    this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
+                });
+                it('Response grammer is set to setting', function () {
+                    let responseGrammar = this.responseEditor.getGrammar().name;
+                    expect(responseGrammar).toEqual('HTTP Message');
+                });
+            });
+            describe('And the request includes @responseGrammar: {name}', function () {
+                beforeEach(function () {
+                    this.dispatchCommand(`
+                        GET http://localhost:${port}/
+                        @responseGrammar: JSON`);
+                    this.waitsForResponse();
+                    this.waitsForRequestEditorActive();
+                });
+                it('Response grammer is set to override', function () {
+                    let responseGrammar = this.responseEditor.getGrammar().name;
+                    expect(responseGrammar).toEqual('JSON');
+                });
             });
         });
     });
