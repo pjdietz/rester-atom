@@ -1,0 +1,7 @@
+{
+    ".source.rester": {
+        "editor": {
+            "commentStart": "// "
+        }
+    }
+}
