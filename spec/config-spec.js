@@ -7,7 +7,7 @@ const port = 8123;
 
 describe('Config', function () {
 
-    beforeEach(function() {
+    beforeEach(function () {
         this.activationPromise = atom.packages.activatePackage('rester');
         this.workspaceElement = atom.views.getView(atom.workspace);
         this.requestEditor = undefined; // Set by dispatchCommand
@@ -22,23 +22,30 @@ describe('Config', function () {
                 response.write('Hello, world!');
                 response.end();
             } else if (request.url.startsWith('/redirect/')) {
-               // Redirect the client from /redirect/{code}/{n} to
-               // /redirect/{code}/{n-1}; If n = 1, redirects to /hello
-               let location = '/';
-               let parts = request.url.slice(1).split('/');
-               let code = parts[1];
-               let n = parseInt(parts[2], 10);
-               if (n > 1) {
-                   location = '/redirect/' + code + '/' + (n - 1);
-               }
-               response.statusCode = code;
-               response.setHeader('Location', location);
-               response.end();
-           } else {
-               response.statusCode = 404;
-               response.write(`Not found: ${request.url}`);
-               response.end();
-           }
+                // Redirect the client from /redirect/{code}/{n} to
+                // /redirect/{code}/{n-1}; If n = 1, redirects to /hello
+                let location = '/';
+                let parts = request.url.slice(1).split('/');
+                let code = parts[1];
+                let n = parseInt(parts[2], 10);
+                if (n > 1) {
+                    location = '/redirect/' + code + '/' + (n - 1);
+                }
+                response.statusCode = code;
+                response.setHeader('Location', location);
+                response.end();
+            } else if (request.url === '/echo') {
+                // Response body will contain Request body
+                response.statusCode = 201;
+                if (request.headers['content-type']) {
+                    response.setHeader('Content-Type', request.headers['content-type']);
+                }
+                request.pipe(response);
+            } else {
+                response.statusCode = 404;
+                response.write(`Not found: ${request.url}`);
+                response.end();
+            }
         });
         this.server.listen(port);
 
@@ -55,7 +62,9 @@ describe('Config', function () {
         };
         // Block until the command is activated.
         this.waitsForCommand = function () {
-            waitsForPromise(() => { return this.activationPromise; });
+            waitsForPromise(() => {
+                return this.activationPromise;
+            });
         };
         // Block until the server sends a response.
         this.waitsForResponse = function () {
@@ -89,6 +98,7 @@ describe('Config', function () {
                 expect(response).toContain('HTTP/1.1 200 OK');
             });
         }
+
         function assertHidesHeaders() {
             it('Does not include headers in response', function () {
                 let response = this.responseEditor.getText();
@@ -377,7 +387,7 @@ describe('Config', function () {
         });
     });
 
-    describe('Response commands', function () {
+    describe('Response Commands', function () {
         describe('When response commands are set', function () {
             let testCommand1Called;
             let testCommand2Called;
@@ -491,6 +501,41 @@ describe('Config', function () {
                 it('Selection include body', function () {
                     expect(this.responseEditor.getSelectedText()).toEqual('Hello, world!');
                 });
+            });
+        });
+    });
+
+    describe('Multiline form fields', function () {
+        describe('When setting includes one delimiter', function () {
+            beforeEach(function () {
+                atom.config.set('rester.multilineFieldDelimiters', ['"""']);
+                this.dispatchCommand(`
+                    POST http://localhost:${port}/echo
+                    @form
+
+                    field: """Line 1\nLine 2"""`);
+                this.waitsForResponse();
+                this.waitsForRequestEditorActive();
+            });
+            it('Sends the multiline field value', function () {
+                let response = this.responseEditor.getText();
+                expect(response).toContain('field=Line%201%0ALine%202');
+            });
+        });
+        describe('When setting includes two delimiters', function () {
+            beforeEach(function () {
+                atom.config.set('rester.multilineFieldDelimiters', ['<<<','>>>']);
+                this.dispatchCommand(`
+                    POST http://localhost:${port}/echo
+                    @form
+
+                    field: <<<Line 1\nLine 2>>>`);
+                this.waitsForResponse();
+                this.waitsForRequestEditorActive();
+            });
+            it('Sends the multiline field value', function () {
+                let response = this.responseEditor.getText();
+                expect(response).toContain('field=Line%201%0ALine%202');
             });
         });
     });
