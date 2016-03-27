@@ -69,6 +69,10 @@ describe('Requests', function () {
         this.waitsForResponse = function () {
             waitsFor(() => { return this.serverSentResponse; });
         };
+        // Block until the request editor is reactivted.
+        this.waitsForRequestEditorActive = function () {
+            waitsFor(() => { return this.requestPane.isActive(); });
+        };
     });
     afterEach(function () {
         this.server.close();
@@ -132,6 +136,7 @@ describe('Requests', function () {
             waitsFor(() => {
                 return atom.workspace.getTextEditors().length > 1;
             });
+            this.waitsForRequestEditorActive();
         });
         it('Hides modal panel', function () {
             expect(this.modalPanel.isVisible()).toBe(false);
@@ -159,11 +164,13 @@ describe('Requests', function () {
             waitsFor(() => {
                 return atom.workspace.getTextEditors().length > 1;
             });
+            this.waitsForRequestEditorActive();
             runs(() => {
                 this.serverSentResponse = false;
                 atom.commands.dispatch(this.workspaceElement, 'rester:request');
             });
             this.waitsForResponse();
+            this.waitsForRequestEditorActive();
         });
         it('Hides modal panel', function () {
             expect(this.modalPanel.isVisible()).toBe(false);
