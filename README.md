@@ -1,6 +1,7 @@
 # RESTer for Atom
 
 [![Travis](https://img.shields.io/travis/pjdietz/rester-atom.svg?style=flat-square)](https://travis-ci.org/pjdietz/rester-atom)
+[![AppVeyor](https://img.shields.io/appveyor/ci/pjdietz/rester-atom.svg?style=flat-square)](https://ci.appveyor.com/project/pjdietz/rester-atom)
 [![GitHub license](https://img.shields.io/github/license/pjdietz/rester-atom.svg?style=flat-square)](LICENSE.md)
 
 RESTer is a text-based HTTP client that allows you to make HTTP requests in Atom and view the responses in a new tab.
