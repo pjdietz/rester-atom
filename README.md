@@ -1,10 +1,12 @@
 # RESTer for Atom
 
-[![Travis](https://img.shields.io/travis/pjdietz/rester-atom.svg?style=flat-square)](https://travis-ci.org/pjdietz/rester-atom)
-[![AppVeyor](https://img.shields.io/appveyor/ci/pjdietz/rester-atom.svg?style=flat-square)](https://ci.appveyor.com/project/pjdietz/rester-atom)
+[![Travis](https://img.shields.io/travis/pjdietz/rester-atom.svg?label=travis&style=flat-square)](https://travis-ci.org/pjdietz/rester-atom)
+[![AppVeyor](https://img.shields.io/appveyor/ci/pjdietz/rester-atom.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/pjdietz/rester-atom)
 [![GitHub license](https://img.shields.io/github/license/pjdietz/rester-atom.svg?style=flat-square)](LICENSE.md)
 
 RESTer is a text-based HTTP client that allows you to make HTTP requests in Atom and view the responses in a new tab.
+
+![Demo](demo.gif)
 
 ## Using
 
@@ -188,7 +190,7 @@ extra: """{
 
 ### Options
 
-To customize RESTer's behavior, include options in the request section. An option begins with `@` and may or may not include a value. For example, to instruct RESTer to include redirect responses in the output, include `@showRedirects` like this:
+To customize RESTer's behavior for a single request, include options in the header section. An option begins with `@` and may or may not include a value. For example, to instruct RESTer to include redirect responses in the output, include `@showRedirects` like this:
 
 ```
 GET http://localhost:8080/path-that-redirects
@@ -262,14 +264,14 @@ If you're interested in contributing to RESTer, please note that heart of RESTer
 
 ## Author
 
-PJ Dietz
+**PJ Dietz**
 
-http://pjdietz.com
-http://github.com/pjdietz
-http://twitter.com/pjdietz
+- [http://pjdietz.com](http://pjdietz.com)
+- [http://github.com/pjdietz](http://github.com/pjdietz)
+- [http://twitter.com/pjdietz](http://twitter.com/pjdietz)
 
 ## Copyright and license
 
 Copyright 2016 by PJ Dietz
 
-MIT License
+[MIT License](LICENSE)
