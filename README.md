@@ -28,7 +28,7 @@ X-custom-header: whatever you want
 Here is the payload for the PUT request. The body is anything that follows the first empty line.
 ```
 
-To run the request, open the Command Palette and run the `Rester: Request` command or press `Opt` + `Cmd` +  `r`. The response will appear in a new tab.
+To run the request, open the Command Palette and run the `Rester: Request` command or press ⌥-⌘-r. The response will appear in a new tab.
 
 ## Making Requests
 
@@ -73,7 +73,7 @@ If-Modified-Since: Mon, 8 Sept 2014 13:0:0 GMT
 
 ### Query Parameters
 
-For requests with many query parameters, you may want to spread your request across a number of lines. RESTer will parse any lines in the headers section that begin with `?` or `&` as query parameters. You may use `=` or `:` to separate the key from the value.
+For requests with many query parameters, you may want to spread your query across a number of lines. RESTer will parse any lines in the headers section that begin with `?` or `&` as query parameters. You may use `=` or `:` to separate the key from the value.
 
 The following example requests are equivalent:
 

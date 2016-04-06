@@ -3,18 +3,18 @@
     "main": "./lib/rester",
     "version": "1.0.0",
     "description": "Text-based HTTP client",
-    "keywords": [],
+    "keywords": ["HTTP", "REST", "client", "request", "form"],
     "activationCommands": {
         "atom-workspace": [
             "rester:request"
         ]
     },
-    "repository": "https://github.com/atom/rester-atom",
+    "repository": "https://github.com/pjdietz/rester-atom",
     "license": "MIT",
     "engines": {
         "atom": ">=1.0.0 <2.0.0"
     },
     "dependencies": {
-        "rester-client": "https://github.com/pjdietz/rester-client.git#master"
+        "rester-client": "^1.0.0"
     }
 }
