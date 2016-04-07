@@ -6,7 +6,7 @@
 
 RESTer is a text-based HTTP client that allows you to make HTTP requests in Atom and view the responses in a new tab.
 
-![Demo](demo.gif)
+![Demo](https://raw.githubusercontent.com/pjdietz/rester-atom/master/demo.gif)
 
 ## Using
 
