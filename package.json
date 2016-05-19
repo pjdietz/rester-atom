@@ -21,6 +21,6 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "rester-client": "^1.0.0"
+    "rester-client": "^1.0.2"
   }
 }
