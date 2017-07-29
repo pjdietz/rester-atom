@@ -8,9 +8,7 @@ const port = 8123;
 // -----------------------------------------------------------------------------
 
 describe('Requests', function () {
-
     beforeEach(function() {
-
         this.activationPromise = atom.packages.activatePackage('rester');
         this.workspaceElement = atom.views.getView(atom.workspace);
         this.modalPanel = undefined; // Set by waitsForModalPanel
@@ -53,6 +51,7 @@ describe('Requests', function () {
         this.waitsForCommand = function () {
             waitsForPromise(() => { return this.activationPromise; });
         };
+
         // Block until the modal panel exists.
         this.waitsForModalPanel = function () {
             waitsFor(() => {
@@ -61,19 +60,23 @@ describe('Requests', function () {
                 return this.modalPanel !== undefined;
             });
         };
+
         // Block until the server receives a request.
         this.waitsForRequest = function () {
             waitsFor(() => { return this.serverReceivedRequest; });
         };
+
         // Block until the server sends a response.
         this.waitsForResponse = function () {
             waitsFor(() => { return this.serverSentResponse; });
         };
+
         // Block until the request editor is reactivted.
         this.waitsForRequestEditorActive = function () {
             waitsFor(() => { return this.requestPane.isActive(); });
         };
     });
+
     afterEach(function () {
         this.server.close();
         this.server = undefined;
@@ -136,14 +139,9 @@ describe('Requests', function () {
             waitsFor(() => {
                 return atom.workspace.getTextEditors().length > 1;
             });
-            this.waitsForRequestEditorActive();
         });
         it('Hides modal panel', function () {
             expect(this.modalPanel.isVisible()).toBe(false);
-        });
-        it('Reactivates request editor after response', function () {
-            expect(atom.workspace.getActivePane()).toBe(this.requestPane);
-            expect(atom.workspace.getActiveTextEditor()).toBe(this.requestEditor);
         });
         it('Writes response to new editor', function () {
             let editors = atom.workspace.getTextEditors();
@@ -164,20 +162,13 @@ describe('Requests', function () {
             waitsFor(() => {
                 return atom.workspace.getTextEditors().length > 1;
             });
-            this.waitsForRequestEditorActive();
             runs(() => {
                 this.serverSentResponse = false;
                 atom.commands.dispatch(this.workspaceElement, 'rester:request');
             });
-            this.waitsForResponse();
-            this.waitsForRequestEditorActive();
         });
         it('Hides modal panel', function () {
             expect(this.modalPanel.isVisible()).toBe(false);
-        });
-        it('Reactivates request editor after response', function () {
-            expect(atom.workspace.getActivePane()).toBe(this.requestPane);
-            expect(atom.workspace.getActiveTextEditor()).toBe(this.requestEditor);
         });
         it('Writes response to previous response editor', function () {
             let editors = atom.workspace.getTextEditors();

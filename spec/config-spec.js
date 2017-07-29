@@ -6,7 +6,6 @@ const rester = require('../lib/rester');
 const port = 8123;
 
 describe('Config', function () {
-
     beforeEach(function () {
         this.activationPromise = atom.packages.activatePackage('rester');
         this.workspaceElement = atom.views.getView(atom.workspace);
@@ -78,12 +77,6 @@ describe('Config', function () {
                 return false;
             });
         };
-        // Block until the request editor is reactivted.
-        this.waitsForRequestEditorActive = function () {
-            waitsFor(() => {
-                return this.requestPane.isActive();
-            });
-        };
     });
 
     afterEach(function (done) {
@@ -98,7 +91,6 @@ describe('Config', function () {
                 expect(response).toContain('HTTP/1.1 200 OK');
             });
         }
-
         function assertHidesHeaders() {
             it('Does not include headers in response', function () {
                 let response = this.responseEditor.getText();
@@ -113,7 +105,6 @@ describe('Config', function () {
                 beforeEach(function () {
                     this.dispatchCommand(`GET http://localhost:${port}/`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsHeaders();
             });
@@ -122,7 +113,6 @@ describe('Config', function () {
                     this.dispatchCommand(`GET http://localhost:${port}/
                         @showHeaders: false`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertHidesHeaders();
             });
@@ -131,7 +121,6 @@ describe('Config', function () {
                     this.dispatchCommand(`GET http://localhost:${port}/
                         @hideHeaders`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertHidesHeaders();
             });
@@ -144,7 +133,6 @@ describe('Config', function () {
                 beforeEach(function () {
                     this.dispatchCommand(`GET http://localhost:${port}/`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertHidesHeaders();
             });
@@ -153,7 +141,6 @@ describe('Config', function () {
                     this.dispatchCommand(`GET http://localhost:${port}/
                         @showHeaders`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsHeaders();
             });
@@ -161,28 +148,24 @@ describe('Config', function () {
     });
 
     describe('Redrects', function () {
-
         function assertShowsFinalRespose() {
             it('Displays final response', function () {
                 let response = this.responseEditor.getText();
                 expect(response).toContain('HTTP/1.1 200 OK');
             });
         }
-
         function assertShowsRedirectResponse() {
             it('Displays redirect response', function () {
                 let response = this.responseEditor.getText();
                 expect(response).toContain('HTTP/1.1 302 Found');
             });
         }
-
         function assertDoesNotShowRedirectResponse() {
             it('Displays redirect response', function () {
                 let response = this.responseEditor.getText();
                 expect(response).not.toContain('HTTP/1.1 302 Found');
             });
         }
-
         describe('When followRedircts is true', function () {
             beforeEach(function () {
                 atom.config.set('rester.followRedirects', true);
@@ -193,7 +176,6 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -203,7 +185,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @followRedirects: false`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -218,7 +199,6 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -228,7 +208,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @followRedirects`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -243,7 +222,6 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -253,7 +231,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @redirectStatusCodes: [301]`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -268,7 +245,6 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
             });
@@ -278,7 +254,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @redirectStatusCodes: [302]`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsFinalRespose();
             });
@@ -294,7 +269,6 @@ describe('Config', function () {
                     this.dispatchCommand(`
                         GET http://localhost:${port}/redirect/302/3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertDoesNotShowRedirectResponse();
                 assertShowsFinalRespose();
@@ -305,7 +279,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/redirect/302/3
                         @showRedirects`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 assertShowsRedirectResponse();
                 assertShowsFinalRespose();
@@ -364,7 +337,6 @@ describe('Config', function () {
                 beforeEach(function () {
                     this.dispatchCommand(`GET http://localhost:${port}/`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 it('Sets response grammar to grammar from setting', function () {
                     let responseGrammar = this.responseEditor.getGrammar().name;
@@ -377,7 +349,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/
                         @responseGrammar: JSON`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 it('Sets response grammar to override', function () {
                     let responseGrammar = this.responseEditor.getGrammar().name;
@@ -411,7 +382,6 @@ describe('Config', function () {
                 beforeEach(function () {
                     this.dispatchCommand(`GET http://localhost:${port}/`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 it('Runs each response command', function () {
                     expect(testCommand1Called).toBe(true);
@@ -424,7 +394,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/
                         @responseCommands: rester:test-command-3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 it('Run each override command', function () {
                     expect(testCommand3Called).toBe(true);
@@ -440,7 +409,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/
                         @responseCommands: rester:test-command-2, rester:test-command-3`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 it('Run each override command', function () {
                     expect(testCommand2Called).toBe(true);
@@ -456,7 +424,6 @@ describe('Config', function () {
                         GET http://localhost:${port}/
                         @responseCommands: ["rester:test-command-2", "rester:test-command-3"]`);
                     this.waitsForResponse();
-                    this.waitsForRequestEditorActive();
                 });
                 it('Run each override command', function () {
                     expect(testCommand2Called).toBe(true);
@@ -515,7 +482,6 @@ describe('Config', function () {
 
                     field: """Line 1\nLine 2"""`);
                 this.waitsForResponse();
-                this.waitsForRequestEditorActive();
             });
             it('Sends the multiline field value', function () {
                 let response = this.responseEditor.getText();
@@ -531,7 +497,6 @@ describe('Config', function () {
 
                     field: <<<Line 1\nLine 2>>>`);
                 this.waitsForResponse();
-                this.waitsForRequestEditorActive();
             });
             it('Sends the multiline field value', function () {
                 let response = this.responseEditor.getText();
